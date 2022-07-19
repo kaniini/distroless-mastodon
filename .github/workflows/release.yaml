@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'
+
+  # Allow manually triggered workflows by maintainers without any
+  # parameters to trigger a proactive rebuild (e.g. when a new
+  # apko lands)
+  workflow_dispatch: {}
+
+name: Create Release
+
+# Don't run multiple releases concurrently.
+concurrency: release
+
+env:
+  GO_VERSION: 1.18
+
+jobs:
+  build:
+    name: Release OCI image
+    runs-on: ubuntu-latest
+
+    # https://docs.github.com/en/actions/reference/authentication-in-a-workflow
+    permissions:
+      id-token: write
+      packages: write
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: sigstore/cosign-installer@main
+    - name: Setup QEMU
+      uses: docker/setup-qemu-action@v1.2.0
+    - uses: chainguard-dev/actions/setup-melange@main
+    - uses: chainguard-dev/actions/melange-keygen@main
+    - uses: chainguard-dev/actions/inky-build-pkg@main
+      with:
+        package-name: ruby
+        archs: x86_64,aarch64

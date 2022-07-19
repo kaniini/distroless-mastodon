@@ -1,0 +1,53 @@
+package:
+  name: ruby
+  version: 3.0.4
+  epoch: 0
+  description: "the Ruby programming language"
+  target-architecture:
+    - all
+  copyright:
+    - paths:
+      - "*"
+      attestation: TODO
+      license: TODO
+  dependencies:
+    runtime:
+
+environment:
+  contents:
+    repositories:
+      - https://dl-cdn.alpinelinux.org/alpine/edge/main
+      - https://dl-cdn.alpinelinux.org/alpine/edge/community
+    packages:
+      - alpine-baselayout-data
+      - busybox
+      - build-base
+      - scanelf
+      - ssl_client
+      - ca-certificates-bundle
+      - autoconf
+      - jemalloc-dev
+      - gdbm-dev
+      - openssl-dev
+      - yaml-dev
+      - readline-dev
+      - zlib-dev
+
+pipeline:
+  - uses: fetch
+    with:
+      uri: https://cache.ruby-lang.org/pub/ruby/3.0/ruby-${{package.version}}.tar.gz
+      expected-sha256: 70b47c207af04bce9acea262308fb42893d3e244f39a4abc586920a1c723722b
+  - runs: |
+      ./configure \
+        --prefix=/usr \
+        --libdir=/lib \
+        --mandir=/usr/share/man \
+        --infodir=/usr/share/info \
+        --localstatedir=/var \
+        --with-shared \
+        --with-jemalloc \
+        --disable-install-doc
+  - uses: autoconf/make
+  - uses: autoconf/make-install
+  - uses: strip
