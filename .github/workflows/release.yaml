@@ -30,7 +30,7 @@ jobs:
       contents: read
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: sigstore/cosign-installer@main
     - name: Setup QEMU
       uses: docker/setup-qemu-action@v1.2.0
